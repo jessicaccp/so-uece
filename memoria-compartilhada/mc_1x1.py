@@ -1,3 +1,5 @@
+""" Cenário: comunicação de um processo com outro processo via memória compartilhada """
+
 from multiprocessing import Process
 from multiprocessing.sharedctypes import Value, Array
 import os
