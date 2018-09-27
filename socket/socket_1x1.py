@@ -6,10 +6,9 @@ def cliente():
     porta = 54321
     mensagem = "\"Saudações do processo %s!\"" % os.getpid()
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((ip, porta))
-    s.send(mensagem.encode())
-    s.close()
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((ip, porta))
+        s.send(mensagem.encode())
 
 def servidor():
     ip = 'localhost'
