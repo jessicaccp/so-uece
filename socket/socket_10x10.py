@@ -1,6 +1,9 @@
-import socket, os, time
+""" Cenário: comunicação de dez processos com dez processos via socket """
+
+import socket, os
 from multiprocessing import Process
 
+# Execução do processo que envia a mensagem, com porta definida previamente
 def cliente(porta):
     ip = 'localhost'
     mensagem = "\"Saudações do processo %s!\"" % os.getpid()
@@ -9,6 +12,7 @@ def cliente(porta):
         s.connect((ip, porta))
         s.send(mensagem.encode())
 
+# Execução do processo que envia a mensagem, com porta definida previamente
 def servidor(porta):
     ip = 'localhost'
     buffer = 1024
@@ -25,7 +29,11 @@ def servidor(porta):
                     break
                 print("Processo %s recebeu: %s" % (os.getpid(), mensagem.decode()))
 
-if __name__ == '__main__':
+# Execução do cenário
+def main():
+    # Cria 10 processos clientes e 10 processos servidores
+    # Cada processo se conecta a outro através de uma porta diferente
+    # Ao criar cada processo, adiciona-o à respectiva lista
     origem = []
     for porta in range(54321, 54331):
         p = Process(target=cliente, args=(porta,))
@@ -36,8 +44,14 @@ if __name__ == '__main__':
         p = Process(target=servidor, args=(porta,))
         destino.append(p)
 
+    # Inicia a execução dos processos
     for p in destino + origem:
         p.start()
 
+    # Processo principal termina sua execução apenas ao final
+    # da execução de todos os processos criados
     for p in destino + origem:
         p.join()
+
+if __name__ == '__main__':
+    main()
