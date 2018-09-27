@@ -1,4 +1,4 @@
-""" Cenário: comunicação de dez processo com um processo via socket """
+""" Cenário: comunicação de dez processos com um processo via socket """
 
 import socket, os
 from multiprocessing import Process
