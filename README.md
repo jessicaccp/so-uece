@@ -1,5 +1,5 @@
-# tr1-so-uece
-Trabalho 1 da disciplina de Sistemas Operacionais: Avaliação de Formas de Comunicação entre Processos
+# so-uece
+Trabalho da disciplina de Sistemas Operacionais: Avaliação de Formas de Comunicação entre Processos
 
 ## Objetivo
 Avaliar comunicação entre processos quando usa-se as seguintes formas:
