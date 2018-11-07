@@ -19,12 +19,16 @@ from os import getpid
 def leitura(num, pid, lock):
     # Fecha trava para que valores salvos na memória compartilhada não sejam alterados no meio da leitura
     lock.acquire()
+
     # Exibe PID do processo destino, valor da variável e PID do processo origem
     # que escreveu na variável, que também foi passado via memória compartilhada
     print("Processo %s recebeu o valor %s do processo %s"
             % (getpid(), num.value, pid.value))
+
+    # Fecha trava
     lock.release()
 
+# Altera valores das variáveis alocadas na memória compartilhada
 def escrita(num, pid, lock):
     lock.acquire()
 
