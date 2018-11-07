@@ -12,7 +12,7 @@ Destino: processo que lê
 from multiprocessing import Pipe, Process
 import os
 
-# Recebe dados do processo origem
+# Recebe dados do processo origem via pipe
 def leitura(r, w):
     # Fecha a escrita no pipe
     w.close()
@@ -24,7 +24,7 @@ def leitura(r, w):
     # Fecha a leitura do pipe
     r.close()
 
-# Envia dados para o processo destino
+# Envia dados para o processo destino via pipe
 def escrita(r, w):
     # Fecha a leitura do pipe
     r.close()

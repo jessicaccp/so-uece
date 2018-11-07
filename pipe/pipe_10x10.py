@@ -13,7 +13,7 @@ totalizando 10 processos destino, que leem e exibem as respectivas mensagens
 from multiprocessing import Pipe, Process, Lock
 import os
 
-# Recebe dados do processo origem
+# Recebe dados do processo origem via pipe
 def leitura(r, w, lock):
     # Fecha a escrita no pipe
     w.close()
@@ -31,7 +31,7 @@ def leitura(r, w, lock):
     # Fecha a leitura do pipe
     r.close()
 
-# Envia dados para o processo destino
+# Envia dados para o processo destino via pipe
 def escrita(r, w, lock):
     # Fecha a leitura do pipe
     r.close()
