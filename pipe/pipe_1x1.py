@@ -5,7 +5,7 @@ Cenário: comunicação de um processo com outro processo via pipe
 Origem: processo que escreve
 Destino: processo que lê
 
-1 processo origem escreve para outro 1 processo destino, que lê e exibe mensagem
+1 processo origem escreve para outro 1 processo destino, que lê e exibe a mensagem
 
 """
 

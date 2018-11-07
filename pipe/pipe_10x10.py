@@ -49,6 +49,7 @@ def escrita(r, w, lock):
     # Fecha a escrita no pipe
     w.close()
 
+# Realiza a comunicação via pipe de 10 processos com outros 10 processos (1 para cada processo que escreve)
 def main():
     # Cria o pipe e a trava usada para exclusão mútua na região crítica
     r, w = Pipe()
