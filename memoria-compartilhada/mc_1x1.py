@@ -16,15 +16,15 @@ from random import randint
 
 # Lê variáveis alocadas na memória compartilhada
 def leitura(num, pid):
-    # Exibe PID do processo destino, valor da variável e PID do processo origem
+    # Exibe PID do processo destino, variável numérica e PID do processo origem
     # que escreveu na variável, que também foi passado via memória compartilhada
     print("Processo %s recebeu o valor %s do processo %s"
             % (getpid(), num.value, pid.value))
 
 # Altera os valores das variáveis alocadas na memória compartilhada
 def escrita(num, pid):
-    # Incrementa o valor atual da variável "num"
-    num.value += 1
+    # Altera o valor atual da variável "num"
+    num.value = randint(100, 999)
 
     # Salva o PID do processo que alterou a variável
     pid.value = getpid()

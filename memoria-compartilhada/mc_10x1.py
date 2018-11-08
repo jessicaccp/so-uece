@@ -21,9 +21,9 @@ def leitura(msg, lock):
 
     # Faz a leitura para cada um dos 10 processos de origem. No caso, o Array "msg"
     # contém 20 valores, onde, dois a dois, foram escritos pelos 10 processos.
-    # O primeiro dos valores é um número que foi incrementado a partir do 0 e o segundo o PID do processo
+    # O primeiro dos valores é um número aleatório de 3 dígitos e o segundo o PID do processo
     for x in range(0, 20, 2):
-        # Exibe PID do processo destino, valor incrementado
+        # Exibe PID do processo destino, valor aleatório gerado pelo processo origem
         # e PID do processo origem que fez a escrita
         print("Processo %s recebeu o valor %s do processo %s"
                 % (getpid(), msg[x], msg[x + 1]))
@@ -32,12 +32,12 @@ def leitura(msg, lock):
     lock.release()
 
 # Altera valores das variáveis alocadas na memória compartilhada
-def escrita(num, pid, msg, lock):
+def escrita(num, pid, msg, lock, index):
     # Fecha trava para que outro processo não tente acessar variáveis durante sua escrita
     lock.acquire()
 
-    # Incrementa valor atual da variável "num"
-    num.value += 1
+    # Altera valor atual da variável "num"
+    num.value = randint(100, 999)
 
     # Salva PID do processo que alterou a variável
     pid.value = getpid()
@@ -45,7 +45,8 @@ def escrita(num, pid, msg, lock):
     # Calcula em que espaço do Array deve salvar os dois valores que acabou de alterar.
     # O processo destino, que fará a leitura, lerá exatamente esse Array "msg", portanto,
     # o processo 1 salva nos espaços 0 e 1, o processo 2 em 2 e 3 e assim sucessivamente.
-    x = (num.value - 1) * 2
+    index.value += 1
+    x = (index.value - 1) * 2
 
     # Escreve os valores no Array
     msg[x] = num.value
@@ -65,10 +66,14 @@ def main():
     pid = Value('i', 0)
     msg = Array('i', range(20))
 
+    # Cria variável que auxilia na escrita dos valores de "num" e "pid"
+    # no Array, compartilhada entre os processos origem
+    index = Value('i', 0)
+
     # Cria processos e atribui a cada um a função que executarão
     origem = []
     for _ in range(10):
-        p = Process(target=escrita, args=(num, pid, msg, lock))
+        p = Process(target=escrita, args=(num, pid, msg, lock, index))
         origem.append(p)
 
     destino = Process(target=leitura, args=(msg, lock))
