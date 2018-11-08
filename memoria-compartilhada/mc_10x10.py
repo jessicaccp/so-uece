@@ -30,16 +30,25 @@ def leitura(num, pid, lock):
 
 # Altera valores das variáveis alocadas na memória compartilhada
 def escrita(num, pid, lock):
+    # Fecha trava para que outro processo não tente acessar variáveis durante sua escrita
     lock.acquire()
 
+    # Altera valor atual da variável "num"
     num.value = randint(100, 999)
+
+    # Salva o PID do processo que alterou a variável
     pid.value = getpid()
 
+    # Abre trava
     lock.release()
 
-if __name__ == '__main__':
+# Realiza a comunicação via memória compartilhada de 10 processos
+# com outros 10 processos (1 para cada processo que escreve)
+def main():
+    # Cria trava
     lock = Lock()
 
+    # Cria variáveis alocadas na memória compartilhada, ambas do tipo int e inicializadas em zero
     num = []
     pid = []
 
@@ -47,6 +56,7 @@ if __name__ == '__main__':
         num.append(Value('i', 0))
         pid.append(Value('i', 0))
 
+    # Cria processos e atribui a cada um a função que executarão
     origem = []
     for x in range(10):
         p = Process(target=escrita, args=(num[x], pid[x], lock))
@@ -57,6 +67,7 @@ if __name__ == '__main__':
         p = Process(target=leitura, args=(num[x], pid[x], lock))
         destino.append(p)
 
+    # Inicia a execução dos processos e faz processo pai aguardar o término de execução dos mesmos
     for p in origem:
         p.start()
         p.join()
@@ -64,3 +75,6 @@ if __name__ == '__main__':
     for p in destino:
         p.start()
         p.join()
+
+if __name__ == '__main__':
+    main()
