@@ -10,7 +10,7 @@ Destino: processo que lê
 """
 
 from multiprocessing import Pipe, Process
-import os
+from os import getpid
 
 # Recebe dados do processo origem via pipe
 def leitura(r, w):
@@ -19,7 +19,7 @@ def leitura(r, w):
 
     # Recebe mensagem e a exibe no terminal junto com seu PID
     mensagem = r.recv()
-    print("Processo %s recebeu: %s" % (os.getpid(), mensagem))
+    print("Processo %s recebeu: %s" % (getpid(), mensagem))
 
     # Fecha a leitura do pipe
     r.close()
@@ -30,7 +30,7 @@ def escrita(r, w):
     r.close()
 
     # Define mensagem contendo seu PID e a envia
-    mensagem = "\"Saudações do processo %s!\"" % os.getpid()
+    mensagem = "\"Saudações do processo %s!\"" % getpid()
     w.send(mensagem)
 
     # Fecha a escrita no pipe
