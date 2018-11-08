@@ -1,12 +1,14 @@
 """ Cenário: comunicação de dez processos com um processo via socket """
 
-import socket, os
 from multiprocessing import Process
+from os import getpid
+
+import socket
 
 def cliente():
     ip = 'localhost'
     porta = 54321
-    mensagem = "\"Saudações do processo %s!\"" % os.getpid()
+    mensagem = "\"Saudações do processo %s!\"" % getpid()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((ip, porta))
@@ -30,7 +32,7 @@ def servidor():
                     mensagem = conexao.recv(buffer)
                     if not mensagem:
                         break
-                    print("Processo %s recebeu: %s" % (os.getpid(), mensagem.decode()))
+                    print("Processo %s recebeu: %s" % (getpid(), mensagem.decode()))
 
 # Execução do cenário
 def main():

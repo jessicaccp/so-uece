@@ -1,14 +1,16 @@
 """ Cenário: comunicação de um processo com outro processo via socket """
 
-import socket, os
 from multiprocessing import Process
+from os import getpid
+
+import socket
 
 # Execução do processo que envia a mensagem
 def cliente():
     # Define ip e porta para conexão e mensagem a ser enviada
     ip = 'localhost'
     porta = 54321
-    mensagem = "\"Saudações do processo %s!\"" % os.getpid()
+    mensagem = "\"Saudações do processo %s!\"" % getpid()
 
     # Cria socket tcp
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -41,7 +43,7 @@ def servidor():
                 if not mensagem:
                     break
                 # Exibe no terminal o pid do processo destino e a mensagem recebida
-                print("Processo %s recebeu: %s" % (os.getpid(), mensagem.decode()))
+                print("Processo %s recebeu: %s" % (getpid(), mensagem.decode()))
 
 # Execução do cenário
 def main():
