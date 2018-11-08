@@ -5,7 +5,7 @@ Cenário: comunicação de dez processos com um processo via memória compartilh
 Origem: processo que escreve
 Destino: processo que lê
 
-10 processos origem escrevem e outro 1 processo destino lê, exibindo as mensagem em seguida
+10 processos origem escrevem e outro 1 processo destino lê, exibindo as mensagens em seguida
 
 """
 
