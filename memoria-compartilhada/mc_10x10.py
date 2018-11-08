@@ -12,8 +12,8 @@ totalizando 10 processos destino, que leem e exibem as respectivas mensagens
 
 from multiprocessing import Process, Lock
 from multiprocessing.sharedctypes import Value, Array
-from random import randint
 from os import getpid
+from random import randint
 
 # Lê variáveis alocadas na memória compartilhada
 def leitura(num, pid, lock):

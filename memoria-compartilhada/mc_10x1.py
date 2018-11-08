@@ -11,7 +11,8 @@ Destino: processo que lê
 
 from multiprocessing import Process, Lock
 from multiprocessing.sharedctypes import Value, Array
-import os
+from os import getpid
+from random import randint
 
 # Lê variáveis alocadas na memória compartilhada
 def leitura(msg, lock):
@@ -25,7 +26,7 @@ def leitura(msg, lock):
         # Exibe PID do processo destino, valor incrementado
         # e PID do processo origem que fez a escrita
         print("Processo %s recebeu o valor %s do processo %s"
-                % (os.getpid(), msg[x], msg[x + 1]))
+                % (getpid(), msg[x], msg[x + 1]))
 
     # Abre trava
     lock.release()
@@ -39,7 +40,7 @@ def escrita(num, pid, msg, lock):
     num.value += 1
 
     # Salva PID do processo que alterou a variável
-    pid.value = os.getpid()
+    pid.value = getpid()
 
     # Calcula em que espaço do Array deve salvar os dois valores que acabou de alterar.
     # O processo destino, que fará a leitura, lerá exatamente esse Array "msg", portanto,
