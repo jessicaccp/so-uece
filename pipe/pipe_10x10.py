@@ -9,6 +9,7 @@ totalizando 10 processos destinatario, que leem e exibem as respectivas mensagen
 
 from multiprocessing import Pipe, Process, Lock
 from os import getpid
+from time import time
 
 # Recebe dados do processo remetente via pipe
 def leitura(r, w, lock):
@@ -19,7 +20,9 @@ def leitura(r, w, lock):
     lock.acquire()
 
     # Recebe mensagem e a exibe no terminal junto com seu PID
+    t = time()
     mensagem = r.recv()
+    print("Tempo de recebimento: %s" % (time() - t))
     print("Processo %s recebeu: %s" % (getpid(), mensagem))
 
     # Abre trava
@@ -38,7 +41,9 @@ def escrita(r, w, lock):
 
     # Define mensagem contendo seu PID e a envia
     mensagem = "\"Saudacoes do processo %s!\"" % getpid()
+    t = time()
     w.send(mensagem)
+    print("Tempo de envio: %s" % (time() - t))
 
     # Abre trava
     lock.release()

@@ -10,6 +10,7 @@ from multiprocessing import Process, Lock
 from multiprocessing.sharedctypes import Value, Array
 from os import getpid
 from random import randint
+from time import time
 
 # Lê variaveis alocadas na memoria compartilhada
 def leitura(msg, lock):
@@ -22,8 +23,12 @@ def leitura(msg, lock):
     for x in range(0, 20, 2):
         # Exibe PID do processo destinatario, valor aleatorio gerado pelo processo remetente
         # e PID do processo remetente que fez a escrita
+        t = time()
+        valor = msg[x]
+        remetente = msg[x + 1]
+        print("Tempo de recebimento: %s" % (time() - t))
         print("Processo %s recebeu o valor %s do processo %s"
-                % (getpid(), msg[x], msg[x + 1]))
+                % (getpid(), valor, remetente))
 
     # Abre trava
     lock.release()
@@ -46,8 +51,10 @@ def escrita(num, pid, msg, lock, index):
     x = (index.value - 1) * 2
 
     # Escreve os valores no Array
+    t = time()
     msg[x] = num.value
     msg[x + 1] = pid.value
+    print("Tempo de envio: %s" % (time() - t))
 
     # Abre a trava
     lock.release()

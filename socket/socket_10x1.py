@@ -9,6 +9,7 @@ Cenario: comunicacao de dez processos com um processo via socket
 from multiprocessing import Process
 from os import getpid
 from socket import socket, AF_INET, SOCK_STREAM
+from time import time
 
 # Envia dados para processo destinatario via socket
 def cliente():
@@ -19,11 +20,13 @@ def cliente():
 
     # Cria socket tcp
     with socket(AF_INET, SOCK_STREAM) as s:
+        t = time()
         # Conecta o socket ao endereco dado pelo ip e porta
         s.connect((ip, porta))
 
         # Envia a mensagem atraves do socket
         s.send(mensagem.encode())
+        print("Tempo de envio: %s" % (time() - t))
 
 # Recebe dados do processo remetente via socket
 def servidor():
@@ -42,6 +45,7 @@ def servidor():
 
         # Usa um loop para executar as conexoes dos 10 processos clientes
         for _ in range(10):
+            t = time()
             # Aceita uma conexao e recebe um objeto usado para receber e enviar dados
             conexao, _ = s.accept()
             with conexao:
@@ -51,6 +55,7 @@ def servidor():
 
                     # Quando nao houver mais o que receber, sai do loop e acaba a conexao
                     if not mensagem:
+                        print("Tempo de recebimento: %s" % (time() - t))
                         break
                     
                     # Exibe no terminal o pid do processo destinatario e a mensagem recebida

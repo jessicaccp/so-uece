@@ -8,6 +8,7 @@ Cenario: comunicacao de um processo com outro processo via pipe
 
 from multiprocessing import Pipe, Process
 from os import getpid
+from time import time
 
 # Recebe dados do processo remetente via pipe
 def leitura(r, w):
@@ -15,7 +16,9 @@ def leitura(r, w):
     w.close()
 
     # Recebe mensagem e a exibe no terminal junto com seu PID
+    t = time()
     mensagem = r.recv()
+    print("Tempo de recebimento: %s" % (time() - t))
     print("Processo %s recebeu: %s" % (getpid(), mensagem))
 
     # Fecha a leitura do pipe
@@ -28,7 +31,9 @@ def escrita(r, w):
 
     # Define mensagem contendo seu PID e a envia
     mensagem = "\"Saudacoes do processo %s!\"" % getpid()
+    t = time()
     w.send(mensagem)
+    print("Tempo de envio: %s" % (time() - t))
 
     # Fecha a escrita no pipe
     w.close()

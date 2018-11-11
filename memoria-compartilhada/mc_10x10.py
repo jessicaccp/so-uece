@@ -11,6 +11,7 @@ from multiprocessing import Process, Lock
 from multiprocessing.sharedctypes import Value, Array
 from os import getpid
 from random import randint
+from time import time
 
 # Le variaveis alocadas na memoria compartilhada
 def leitura(num, pid, lock):
@@ -19,6 +20,10 @@ def leitura(num, pid, lock):
 
     # Exibe PID do processo destinatario, valor da variavel e PID do processo remetente
     # que escreveu na variavel, que tambem foi passado via memoria compartilhada
+    t = time()
+    valor = num.value
+    remetente = pid.value
+    print("Tempo de recebimento: %s" % (time() - t))
     print("Processo %s recebeu o valor %s do processo %s"
             % (getpid(), num.value, pid.value))
 
@@ -30,11 +35,13 @@ def escrita(num, pid, lock):
     # Fecha trava para que outro processo nao tente acessar variaveis durante sua escrita
     lock.acquire()
 
+    t = time()
     # Altera valor atual da variavel "num"
     num.value = randint(100, 999)
 
     # Salva o PID do processo que alterou a variavel
     pid.value = getpid()
+    print("Tempo de envio: %s" % (time() - t))
 
     # Abre trava
     lock.release()
