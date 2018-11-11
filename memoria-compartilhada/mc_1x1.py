@@ -11,9 +11,11 @@ from multiprocessing.sharedctypes import Value
 from os import getpid
 from random import randint
 from time import time
+import psutil
 
 # Le variaveis alocadas na memoria compartilhada
 def leitura(num, pid, lock):
+    p = psutil.Process(getpid())
     # Fecha trava para que valores salvos na memoria compartilhada nao sejam alterados no meio da leitura
     lock.acquire()
 
@@ -28,9 +30,11 @@ def leitura(num, pid, lock):
 
     # Abre trava
     lock.release()
+    print(p.memory_info())
 
 # Altera os valores das variaveis alocadas na memoria compartilhada
 def escrita(num, pid, lock):
+    p = psutil.Process(getpid())
     # Fecha trava para que outro processo nao tente acessar variaveis durante sua escrita
     lock.acquire()
 
@@ -44,6 +48,7 @@ def escrita(num, pid, lock):
 
     # Abre a trava
     lock.release()
+    print(p.memory_info())
 
 # Realiza a comunicacao via memoria compartilhada entre dois processos
 def main():

@@ -11,9 +11,11 @@ from multiprocessing import Process
 from os import getpid
 from socket import socket, AF_INET, SOCK_STREAM
 from time import time
+import psutil
 
 # Envia dados para processo destinatario via socket, com porta definida previamente
 def cliente(porta):
+    p = psutil.Process(getpid())
     # Define ip para conexao e mensagem a ser enviada
     ip = 'localhost'
     mensagem = "\"Saudacoes do processo %s!\"" % getpid()
@@ -27,9 +29,11 @@ def cliente(porta):
         # Envia a mensagem atraves do socket
         s.send(mensagem.encode())
         print("Tempo de envio: %s" % (time() - t))
+    print(p.memory_info())
 
 # Recebe dados do processo remetente via socket, com porta definida previamente
 def servidor(porta):
+    p = psutil.Process(getpid())
     # Define ip para conexao e tamanho do buffer em bytes
     ip = 'localhost'
     buffer = 1024
@@ -57,6 +61,7 @@ def servidor(porta):
                 
                 # Exibe no terminal o pid do processo destinatario e a mensagem recebida
                 print("Processo %s recebeu: %s" % (getpid(), mensagem.decode()))
+    print(p.memory_info())
 
 # Realiza a comunicacao via socket de 10 processos com
 # outros 10 processos (1 para cada processo que envia mensagem)

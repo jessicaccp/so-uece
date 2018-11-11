@@ -10,9 +10,11 @@ totalizando 10 processos destinatario, que leem e exibem as respectivas mensagen
 from multiprocessing import Pipe, Process, Lock
 from os import getpid
 from time import time
+import psutil
 
 # Recebe dados do processo remetente via pipe
 def leitura(r, w, lock):
+    p = psutil.Process(getpid())
     # Fecha a escrita no pipe
     w.close()
     
@@ -30,9 +32,11 @@ def leitura(r, w, lock):
 
     # Fecha a leitura do pipe
     r.close()
+    print(p.memory_info())
 
 # Envia dados para o processo destinatario via pipe
 def escrita(r, w, lock):
+    p = psutil.Process(getpid())
     # Fecha a leitura do pipe
     r.close()
 
@@ -50,6 +54,7 @@ def escrita(r, w, lock):
 
     # Fecha a escrita no pipe
     w.close()
+    print(p.memory_info())
 
 # Realiza a comunicacao via pipe de 10 processos com outros 10 processos (1 para cada processo que escreve)
 def main():

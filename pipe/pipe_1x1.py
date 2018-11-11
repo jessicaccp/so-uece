@@ -9,9 +9,11 @@ Cenario: comunicacao de um processo com outro processo via pipe
 from multiprocessing import Pipe, Process
 from os import getpid
 from time import time
+import psutil
 
 # Recebe dados do processo remetente via pipe
 def leitura(r, w):
+    p = psutil.Process(getpid())
     # Fecha a escrita no pipe
     w.close()
 
@@ -23,9 +25,11 @@ def leitura(r, w):
 
     # Fecha a leitura do pipe
     r.close()
+    print(p.memory_info())
 
 # Envia dados para o processo destinatario via pipe
 def escrita(r, w):
+    p = psutil.Process(getpid())
     # Fecha a leitura do pipe
     r.close()
 
@@ -37,6 +41,7 @@ def escrita(r, w):
 
     # Fecha a escrita no pipe
     w.close()
+    print(p.memory_info())
 
 # Realiza a comunicacao via pipe entre os dois processos
 def main():
