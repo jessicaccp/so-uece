@@ -1,7 +1,6 @@
 """
 
 Cenario: comunicacao de dez processos com um processo via memoria compartilhada
-
 10 processos remetente escrevem, cada um para outro 1 processo destinatario distinto,
 totalizando 10 processos destinatario, que leem e exibem as respectivas mensagens
 
@@ -16,40 +15,44 @@ import psutil
 
 # Le variaveis alocadas na memoria compartilhada
 def leitura(num, pid, lock):
-    p = psutil.Process(getpid())
     # Fecha trava para que valores salvos na memoria compartilhada nao sejam alterados no meio da leitura
     lock.acquire()
 
-    # Exibe PID do processo destinatario, valor da variavel e PID do processo remetente
-    # que escreveu na variavel, que tambem foi passado via memoria compartilhada
+    # Exibe PID do processo destinatario, valor da variavel e PID do
+    # processo remetente que escreveu na variavel, que tambem foi
+    # passado via memoria compartilhada e calcula tempo de comunicacao
     t = time()
     valor = num.value
     remetente = pid.value
     print("Tempo de recebimento: %s" % (time() - t))
     print("Processo %s recebeu o valor %s do processo %s"
-            % (getpid(), num.value, pid.value))
+            % (getpid(), valor, remetente))
 
     # Fecha trava
     lock.release()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Destinatario:", p.memory_info())
 
 # Altera valores das variaveis alocadas na memoria compartilhada
 def escrita(num, pid, lock):
-    p = psutil.Process(getpid())
     # Fecha trava para que outro processo nao tente acessar variaveis durante sua escrita
     lock.acquire()
 
+    # Altera valor atual da variavel "num", salva o PID do processo
+    # que alterou a variavel e calcula o tempo de comunicacao
     t = time()
-    # Altera valor atual da variavel "num"
     num.value = randint(100, 999)
-
-    # Salva o PID do processo que alterou a variavel
     pid.value = getpid()
     print("Tempo de envio: %s" % (time() - t))
 
     # Abre trava
     lock.release()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Remetente:", p.memory_info())
 
 # Realiza a comunicacao via memoria compartilhada de 10 processos
 # com outros 10 processos (1 para cada processo que escreve)

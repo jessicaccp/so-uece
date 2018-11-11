@@ -1,7 +1,6 @@
 """
 
 Cenario: comunicacao de um processo com outro processo via memoria compartilhada
-
 1 processo remetente escreve e outro 1 processo destinatario le, exibindo a mensagem em seguida
 
 """
@@ -15,12 +14,12 @@ import psutil
 
 # Le variaveis alocadas na memoria compartilhada
 def leitura(num, pid, lock):
-    p = psutil.Process(getpid())
     # Fecha trava para que valores salvos na memoria compartilhada nao sejam alterados no meio da leitura
     lock.acquire()
 
     # Exibe PID do processo destinatario, variavel numerica e PID do processo remetente
-    # que escreveu na variavel, que tambem foi passado via memoria compartilhada
+    # que escreveu na variavel, que tambem foi passado via memoria compartilhada,
+    # e calcula tempo de comunicacao
     t = time()
     valor = num.value
     remetente = pid.value
@@ -30,25 +29,29 @@ def leitura(num, pid, lock):
 
     # Abre trava
     lock.release()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Destinatario:", p.memory_info())
 
 # Altera os valores das variaveis alocadas na memoria compartilhada
 def escrita(num, pid, lock):
-    p = psutil.Process(getpid())
     # Fecha trava para que outro processo nao tente acessar variaveis durante sua escrita
     lock.acquire()
 
+    # Altera o valor atual da variavel "num", salva o PID do processo que
+    # alterou a variavel e calcula tempo de comunicacao
     t = time()
-    # Altera o valor atual da variavel "num"
     num.value = randint(100, 999)
-
-    # Salva o PID do processo que alterou a variavel
     pid.value = getpid()
     print("Tempo de envio: %s" % (time() - t))
 
     # Abre a trava
     lock.release()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Remetente:", p.memory_info())
 
 # Realiza a comunicacao via memoria compartilhada entre dois processos
 def main():

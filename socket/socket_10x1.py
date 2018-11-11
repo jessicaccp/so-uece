@@ -1,7 +1,6 @@
 """
 
 Cenario: comunicacao de dez processos com um processo via socket
-
 10 processo remetente enviam e outro 1 processo destinatario recebe pacotes, exibindo as mensagens em seguida
 
 """
@@ -14,7 +13,6 @@ import psutil
 
 # Envia dados para processo destinatario via socket
 def cliente():
-    p = psutil.Process(getpid())
     # Define ip e porta para conexao e mensagem a ser enviada
     ip = 'localhost'
     porta = 54321
@@ -22,14 +20,17 @@ def cliente():
 
     # Cria socket tcp
     with socket(AF_INET, SOCK_STREAM) as s:
-        t = time()
         # Conecta o socket ao endereco dado pelo ip e porta
         s.connect((ip, porta))
 
-        # Envia a mensagem atraves do socket
+        # Envia a mensagem atraves do socket e calcula tempo de comunicacao
+        t = time()
         s.send(mensagem.encode())
         print("Tempo de envio: %s" % (time() - t))
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Remetente:", p.memory_info())
 
 # Recebe dados do processo remetente via socket
 def servidor():
@@ -49,10 +50,11 @@ def servidor():
 
         # Usa um loop para executar as conexoes dos 10 processos clientes
         for _ in range(10):
-            t = time()
-            # Aceita uma conexao e recebe um objeto usado para receber e enviar dados
+            # Aceita uma conexao, recebe um objeto usado para receber e enviar dados
+            # e calcula tempo de comunicacao
             conexao, _ = s.accept()
             with conexao:
+                t = time()
                 while True:
                     # Recebe dados em bytes do socket, de tamanho maximo 1024
                     mensagem = conexao.recv(buffer)
@@ -64,7 +66,10 @@ def servidor():
                     
                     # Exibe no terminal o pid do processo destinatario e a mensagem recebida
                     print("Processo %s recebeu: %s" % (getpid(), mensagem.decode()))
-    print(p.memory_info())
+    
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Destinatario:", p.memory_info())
 
 # Realiza a comunicacao via socket de 10 processos com outro processo
 def main():

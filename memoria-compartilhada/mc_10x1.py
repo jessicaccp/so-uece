@@ -1,7 +1,6 @@
 """
 
 Cenario: comunicacao de dez processos com um processo via memoria compartilhada
-
 10 processos remetente escrevem e outro 1 processo destinatario le, exibindo as mensagens em seguida
 
 """
@@ -15,7 +14,6 @@ import psutil
 
 # Lê variaveis alocadas na memoria compartilhada
 def leitura(msg, lock):
-    p = psutil.Process(getpid())
     # Fecha trava para que valores salvos na memoria compartilhada nao sejam alterados no meio da leitura
     lock.acquire()
 
@@ -24,7 +22,7 @@ def leitura(msg, lock):
     # O primeiro dos valores e um numero aleatorio de 3 digitos e o segundo o PID do processo
     for x in range(0, 20, 2):
         # Exibe PID do processo destinatario, valor aleatorio gerado pelo processo remetente
-        # e PID do processo remetente que fez a escrita
+        # e PID do processo remetente que fez a escrita e calcula tempo de comunicacao
         t = time()
         valor = msg[x]
         remetente = msg[x + 1]
@@ -34,11 +32,13 @@ def leitura(msg, lock):
 
     # Abre trava
     lock.release()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Destinatario:", p.memory_info())
 
 # Altera valores das variaveis alocadas na memoria compartilhada
 def escrita(num, pid, msg, lock, index):
-    p = psutil.Process(getpid())
     # Fecha trava para que outro processo nao tente acessar variaveis durante sua escrita
     lock.acquire()
 
@@ -54,7 +54,7 @@ def escrita(num, pid, msg, lock, index):
     index.value += 1
     x = (index.value - 1) * 2
 
-    # Escreve os valores no Array
+    # Escreve os valores no Array e calcula tempo de comunicacao
     t = time()
     msg[x] = num.value
     msg[x + 1] = pid.value
@@ -62,7 +62,10 @@ def escrita(num, pid, msg, lock, index):
 
     # Abre a trava
     lock.release()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Remetente:", p.memory_info())
 
 # Realiza a comunicacao via memoria compartilhada de 10 processos com outro processo
 def main():

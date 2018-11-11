@@ -1,7 +1,6 @@
 """
 
 Cenario: comunicacao de dez processos com um processo via pipe
-
 10 processos remetente escrevem para outro 1 processo destinatario, que le e exibe as mensagens
 
 """
@@ -13,7 +12,6 @@ import psutil
 
 # Recebe dados do processo remetente via pipe
 def leitura(r, w, lock):
-    p = psutil.Process(getpid())
     # Fecha a escrita no pipe
     w.close()
 
@@ -22,7 +20,7 @@ def leitura(r, w, lock):
         # Fecha trava para que a mensagem não seja alterada antes do print
         lock.acquire()
 
-        # Recebe mensagem e a exibe no terminal junto com seu PID
+        # Recebe mensagem, a exibe no terminal junto com seu PID e calcula tempo de comunicacao
         t = time()
         mensagem = r.recv()
         print("Tempo de recebimento: %s" % (time() - t))
@@ -33,18 +31,20 @@ def leitura(r, w, lock):
 
     # Fecha a leitura do pipe
     r.close()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Destinatario:", p.memory_info())
 
 # Envia dados para o processo destinatario via pipe
 def escrita(r, w, lock):
-    p = psutil.Process(getpid())
     # Fecha a leitura do pipe
     r.close()
 
     # Fecha trava para que a mensagem nao seja alterada antes de ser enviada
     lock.acquire()
 
-    # Define mensagem contendo seu PID e a envia
+    # Define mensagem contendo seu PID, a envia e calcula tempo de comunicacao
     mensagem = "\"Saudacoes do processo %s!\"" % getpid()
     t = time()
     w.send(mensagem)
@@ -55,7 +55,10 @@ def escrita(r, w, lock):
 
     # Fecha a escrita no pipe
     w.close()
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Remetente:", p.memory_info())
 
 # Realiza a comunicacao via pipe de 10 processos com outro processo
 def main():

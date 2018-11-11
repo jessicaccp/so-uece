@@ -1,7 +1,6 @@
 """
 
 Cenario: comunicacao de um processo com outro processo via socket
-
 1 processo remetente envia e outro 1 processo destinatario recebe pacote, exibindo a mensagem em seguida
 
 """
@@ -14,7 +13,6 @@ import psutil
 
 # Envia dados para processo destinatario via socket
 def cliente():
-    p = psutil.Process(getpid())
     # Define ip e porta para conexao e mensagem a ser enviada
     ip = 'localhost'
     porta = 54321
@@ -22,19 +20,20 @@ def cliente():
 
     # Cria socket tcp
     with socket(AF_INET, SOCK_STREAM) as s:
-        t = time()
         # Conecta o socket ao endereço dado pelo ip e porta
         s.connect((ip, porta))
 
-        # Envia a mensagem atraves do socket
+        # Envia a mensagem atraves do socket e calcula tempo de comunicacao
+        t = time()
         s.send(mensagem.encode())
         print("Tempo de envio: %s" % (time() - t))
     
-    print(p.memory_info())
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Remetente:", p.memory_info())
 
 # Recebe dados do processo remetente via socket
 def servidor():
-    p = psutil.Process(getpid())
     # Define ip e porta para conexao e tamanho do buffer em bytes
     ip = 'localhost'
     porta = 54321
@@ -48,10 +47,11 @@ def servidor():
         # Permite que o servidor aceite 1 conexao
         s.listen(1)
 
-        t = time()
-        # Aceita uma conexao e recebe um objeto usado para receber e enviar dados
+        # Aceita uma conexao, recebe um objeto usado para receber e enviar dados
+        # e calcula tempo de comunicacao
         conexao, _ = s.accept()
         with conexao:
+            t = time()
             while True:
                 # Recebe dados em bytes do socket, de tamanho maximo 1024
                 mensagem = conexao.recv(buffer)
@@ -63,7 +63,10 @@ def servidor():
 
                 # Exibe no terminal o pid do processo destinatario e a mensagem recebida
                 print("Processo %s recebeu: %s" % (getpid(), mensagem.decode()))
-    print(p.memory_info())
+
+    # Calcula uso de memoria do processo
+    p = psutil.Process(getpid())
+    print("Destinatario:", p.memory_info())
 
 # Realiza a comunicacao via socket entre dois processos
 def main():
