@@ -1,23 +1,20 @@
 """
 
-Cenário: comunicação de dez processos com um processo via pipe
+Cenario: comunicacao de dez processos com um processo via pipe
 
-Origem: processo que escreve
-Destino: processo que lê
-
-10 processos origem escrevem para outro 1 processo destino, que lê e exibe as mensagens
+10 processos remetente escrevem para outro 1 processo destinatario, que le e exibe as mensagens
 
 """
 
 from multiprocessing import Pipe, Process, Lock
 from os import getpid
 
-# Recebe dados do processo origem via pipe
+# Recebe dados do processo remetente via pipe
 def leitura(r, w, lock):
     # Fecha a escrita no pipe
     w.close()
 
-    # Faz a leitura para cada um dos 10 processos de origem
+    # Faz a leitura para cada um dos 10 processos de remetente
     for _ in range(10):
         # Fecha trava para que a mensagem não seja alterada antes do print
         lock.acquire()
@@ -32,16 +29,16 @@ def leitura(r, w, lock):
     # Fecha a leitura do pipe
     r.close()
 
-# Envia dados para o processo destino via pipe
+# Envia dados para o processo destinatario via pipe
 def escrita(r, w, lock):
     # Fecha a leitura do pipe
     r.close()
 
-    # Fecha trava para que a mensagem não seja alterada antes de ser enviada
+    # Fecha trava para que a mensagem nao seja alterada antes de ser enviada
     lock.acquire()
 
     # Define mensagem contendo seu PID e a envia
-    mensagem = "\"Saudações do processo %s!\"" % getpid()
+    mensagem = "\"Saudacoes do processo %s!\"" % getpid()
     w.send(mensagem)
 
     # Abre trava
@@ -50,27 +47,27 @@ def escrita(r, w, lock):
     # Fecha a escrita no pipe
     w.close()
 
-# Realiza a comunicação via pipe de 10 processos com outro processo
+# Realiza a comunicacao via pipe de 10 processos com outro processo
 def main():
-    # Cria o pipe e a trava usada para exclusão mútua na região crítica
+    # Cria o pipe e a trava usada para exclusao mutua na regiao critica
     r, w = Pipe()
     lock = Lock()
 
-    # Cria processos e atribui a cada um a função que executarão
-    origem = []
+    # Cria processos e atribui a cada um a funcao que executarao
+    remetente = []
     for _ in range(10):
         p = Process(target=escrita, args=(r, w, lock))
-        origem.append(p)
+        remetente.append(p)
 
-    destino = Process(target=leitura, args=(r, w, lock))
+    destinatario = Process(target=leitura, args=(r, w, lock))
 
-    # Inicia a execução dos processos e faz processo pai aguardar o término de execução dos mesmos
-    for p in origem:
+    # Inicia a execucao dos processos e faz processo pai aguardar o termino de execucao dos mesmos
+    for p in remetente:
         p.start()
         p.join()
 
-    destino.start()
-    destino.join()
+    destinatario.start()
+    destinatario.join()
 
 if __name__ == '__main__':
     main()
