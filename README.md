@@ -1,4 +1,4 @@
-# so-uece
+# interprocess-communication-evaluation
 Trabalho da disciplina de Sistemas Operacionais: Avaliação de Formas de Comunicação entre Processos
 
 ## Objetivo
